@@ -1,0 +1,62 @@
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(179, 229, 252, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(179, 229, 252, 0.7);
+  }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+.border-draw {
+  position: relative;
+  overflow: hidden;
+}
+.border-draw::before,
+.border-draw::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background: #b3e5fc;
+  transition: width 0.3s ease;
+}
+.border-draw::before {
+  top: 0;
+  left: 0;
+}
+.border-draw::after {
+  bottom: 0;
+  right: 0;
+}
+.border-draw:hover::before,
+.border-draw:hover::after {
+  width: 100%;
+}
+
+.terminal-bullet::before {
+  content: ">";
+  color: #b3e5fc;
+  margin-right: 8px;
+  font-family: "JetBrains Mono";
+}
+
+.precision-border {
+  border: 1px solid #3d484f;
+  transition: border-color 0.3s ease;
+}
+.precision-border:hover {
+  border-color: #b3e5fc;
+}
+
+/* Star Glow Effect for Buttons */
+.star-glow {
+  box-shadow: 0 0 20px rgba(179, 229, 252, 0.3);
+  transition: box-shadow 0.3s ease;
+}
+.star-glow:hover {
+  box-shadow: 0 0 30px rgba(179, 229, 252, 0.5);
+}
