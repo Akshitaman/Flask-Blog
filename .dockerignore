@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# Virtual environments
+env/
+venv/
+.venv/
+ENV/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Testing & coverage
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE & editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile*
+.dockerignore
+docker-compose*.yml
+docker-compose*.yaml
+
+# Node / Stitch dev tooling (not needed at runtime)
+node_modules/
+package.json
+package-lock.json
+scripts/
+
+# Stitch design sources (already implemented in templates/ + static/)
+docs/
+
+# CI & markdown docs
+.github/
+.gitlab-ci.yml
+README.md
+*.md

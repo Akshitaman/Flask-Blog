@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{% block title %}Dockerize | Containerize Your Knowledge{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#b3e5fc",
+              "on-primary": "#003547",
+              "on-background": "#dee3e6",
+              "on-surface": "#dee3e6",
+              "on-surface-variant": "#bcc8d0",
+              "background": "#0f1416",
+              "surface": "#0f1416",
+              "surface-container-low": "#171c1f",
+              "surface-container": "#1b2023",
+              "surface-variant": "#303638",
+              "outline": "#87929a",
+              "outline-variant": "#3d484f",
+              "primary-container": "#b3e5fc",
+              "on-primary-container": "#00445b",
+              "error": "#ffb4ab"
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem"
+            },
+            spacing: {
+              "stack-lg": "48px",
+              "margin-mobile": "16px",
+              "margin-desktop": "48px",
+              "stack-md": "24px",
+              "stack-sm": "8px",
+              "gutter": "24px",
+              "unit": "4px",
+              "container-max": "1200px"
+            },
+            fontFamily: {
+              "body-lg": ["Geist"],
+              "label-md": ["JetBrains Mono"],
+              "headline-lg": ["JetBrains Mono"],
+              "body-md": ["Geist"],
+              "display-lg": ["JetBrains Mono"],
+              "code-block": ["JetBrains Mono"]
+            },
+            fontSize: {
+              "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+              "label-md": ["14px", { lineHeight: "1.0", fontWeight: "500" }],
+              "headline-lg": ["32px", { lineHeight: "1.2", letterSpacing: "-0.01em", fontWeight: "600" }],
+              "body-md": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+              "display-lg": ["48px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "700" }],
+              "code-block": ["14px", { lineHeight: "1.5", fontWeight: "400" }]
+            },
+            maxWidth: {
+              "container-max": "1200px"
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(179, 229, 252, 0.4); }
+            50% { box-shadow: 0 0 35px rgba(179, 229, 252, 0.7); }
+        }
+        .animate-pulse-glow { animation: pulse-glow 2s infinite ease-in-out; }
+        .border-draw { position: relative; overflow: hidden; }
+        .border-draw::before, .border-draw::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: #b3e5fc;
+            transition: width 0.3s ease;
+        }
+        .border-draw::before { top: 0; left: 0; }
+        .border-draw::after { bottom: 0; right: 0; }
+        .border-draw:hover::before, .border-draw:hover::after { width: 100%; }
+        .terminal-bullet::before {
+            content: '>';
+            color: #b3e5fc;
+            margin-right: 8px;
+            font-family: 'JetBrains Mono';
+        }
+        .precision-border {
+            border: 1px solid #3d484f;
+            transition: border-color 0.3s ease;
+        }
+        .precision-border:hover { border-color: #b3e5fc; }
+        .star-glow {
+            box-shadow: 0 0 20px rgba(179, 229, 252, 0.3);
+            transition: box-shadow 0.3s ease;
+        }
+        .star-glow:hover { box-shadow: 0 0 30px rgba(179, 229, 252, 0.5); }
+        .reveal-hidden {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        @keyframes scroll-dot-down {
+            0% { transform: translateY(0); opacity: 0; }
+            30% { opacity: 1; }
+            100% { transform: translateY(16px); opacity: 0; }
+        }
+        .animate-scroll-dot-down {
+            animation: scroll-dot-down 1.8s infinite ease-in-out;
+        }
+        @keyframes scroll-dot-up {
+            0% { transform: translateY(16px); opacity: 0; }
+            30% { opacity: 1; }
+            100% { transform: translateY(0); opacity: 0; }
+        }
+        .animate-scroll-dot-up {
+            animation: scroll-dot-up 1.8s infinite ease-in-out;
+        }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<div class="fixed inset-0 w-full h-full -z-10 bg-background overflow-hidden">
+    <script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+    <div id="threejs-container" style="width:100%;height:100%"></div>
+    <script>
+    (function() {
+      const container = document.getElementById('threejs-container');
+      const width = container.clientWidth || window.innerWidth;
+      const height = container.clientHeight || window.innerHeight;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, width / height, 1, 2000);
+      camera.position.z = 1000;
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      container.appendChild(renderer.domElement);
+      const starCount = 2000;
+      const positions = new Float32Array(starCount * 3);
+      const colors = new Float32Array(starCount * 3);
+      const sizes = new Float32Array(starCount);
+      for (let i = 0; i < starCount; i++) {
+        positions[i * 3] = (Math.random() - 0.5) * 2000;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 2000;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 2000;
+        colors[i * 3] = 1; colors[i * 3 + 1] = 1; colors[i * 3 + 2] = 1;
+        sizes[i] = Math.random() * 2;
+      }
+      function createCircleTexture() {
+        const size = 64;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        const center = size / 2;
+        
+        const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.8)');
+        gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.2)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(center, center, center, 0, Math.PI * 2);
+        ctx.fill();
+        
+        return new THREE.CanvasTexture(canvas);
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+      const material = new THREE.PointsMaterial({
+        size: 8,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending,
+        map: createCircleTexture(),
+        depthWrite: false
+      });
+      const stars = new THREE.Points(geometry, material);
+      scene.add(stars);
+      function animate() {
+        requestAnimationFrame(animate);
+        stars.rotation.y += 0.0005;
+        stars.rotation.x += 0.0002;
+        material.opacity = 0.6 + Math.sin(Date.now() * 0.001) * 0.2;
+        renderer.render(scene, camera);
+      }
+      animate();
+      window.addEventListener('resize', () => {
+        const newWidth = container.clientWidth || window.innerWidth;
+        const newHeight = container.clientHeight || window.innerHeight;
+        camera.aspect = newWidth / newHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(newWidth, newHeight);
+      });
+    })();
+    </script>
+</div>
+
+<header class="fixed top-0 left-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-outline-variant">
+    <nav class="flex justify-between items-center h-16 px-4 md:px-12 w-full relative">
+        <div class="flex items-center">
+            <a class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight" href="{{ url_for('index') }}">Dockerize</a>
+        </div>
+        <div class="hidden md:flex gap-6 items-center absolute left-1/2 transform -translate-x-1/2">
+            <a class="relative text-on-surface-variant hover:text-primary font-label-md text-label-md transition-all pb-1 group hover:scale-105 duration-200" href="{{ url_for('index') }}#posts">
+                Blog
+                <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+            </a>
+            <a class="relative text-on-surface-variant font-label-md text-label-md hover:text-primary transition-all pb-1 group hover:scale-105 duration-200" href="{{ url_for('docs') }}">
+                Documentation
+                <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+            </a>
+        </div>
+        <div class="flex items-center gap-stack-sm">
+            <a href="{{ url_for('create') }}" class="hidden sm:inline-flex px-4 py-2 bg-primary text-on-primary font-label-md text-label-md font-bold rounded-lg star-glow hover:scale-105 hover:brightness-110 active:scale-95 transition-all duration-200">
+                + New Post
+            </a>
+            <button id="mobile-menu-btn" class="md:hidden flex items-center p-2 text-on-surface-variant hover:text-primary transition-colors focus:outline-none" aria-label="Toggle Menu">
+                <span class="material-symbols-outlined text-[24px]" id="menu-icon">menu</span>
+            </button>
+        </div>
+    </nav>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden absolute top-16 left-0 w-full bg-background/95 backdrop-blur-md border-b border-outline-variant px-4 py-4 flex flex-col gap-4 z-40">
+        <a class="relative text-on-surface-variant font-label-md text-label-md py-2 border-b border-outline-variant/30 transition-all group hover:scale-105 duration-200" href="{{ url_for('index') }}#posts">
+            Blog
+            <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a class="relative text-on-surface-variant font-label-md text-label-md hover:text-primary py-2 border-b border-outline-variant/30 transition-all group hover:scale-105 duration-200" href="{{ url_for('docs') }}">
+            Documentation
+            <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="{{ url_for('create') }}" class="inline-flex px-4 py-3 bg-primary text-on-primary font-label-md text-label-md font-bold rounded-lg star-glow hover:scale-105 hover:brightness-110 active:scale-95 transition-all duration-200 justify-center">
+            + New Post
+        </a>
+    </div>
+</header>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        
+        if (mobileMenuBtn && mobileMenu && menuIcon) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                if (mobileMenu.classList.contains('hidden')) {
+                    menuIcon.textContent = 'menu';
+                } else {
+                    menuIcon.textContent = 'close';
+                }
+            });
+            
+            // Close mobile menu when clicking a link
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                    menuIcon.textContent = 'menu';
+                });
+            });
+        }
+
+        // Scroll Reveal Animation using Intersection Observer
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal-visible');
+                } else {
+                    entry.target.classList.remove('reveal-visible');
+                }
+            });
+        }, { threshold: 0.05 });
+
+        document.querySelectorAll('.scroll-reveal').forEach(el => {
+            el.classList.add('reveal-hidden');
+            revealObserver.observe(el);
+        });
+
+        // Scroll Up/Down Button Logic
+        const scrollBtn = document.getElementById('scroll-btn');
+        const scrollCircle = document.getElementById('scroll-circle');
+        const postsSection = document.getElementById('posts');
+
+        if (scrollBtn && scrollCircle) {
+            const handleScroll = () => {
+                const scrollY = window.scrollY;
+                const viewportHeight = window.innerHeight;
+                const totalHeight = document.documentElement.scrollHeight;
+
+                const isAtTop = scrollY < 50;
+                const isAtBottom = (viewportHeight + scrollY) >= (totalHeight - 55);
+
+                // If page is short and does not scroll, hide it
+                if (totalHeight <= viewportHeight + 10) {
+                    scrollBtn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-10', 'scale-75');
+                    scrollBtn.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                    return;
+                }
+
+                if (isAtTop) {
+                    // Show scroll down button
+                    scrollBtn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-10', 'scale-75');
+                    scrollBtn.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                    scrollCircle.classList.remove('animate-scroll-dot-up');
+                    scrollCircle.classList.add('animate-scroll-dot-down');
+                    scrollBtn.setAttribute('aria-label', 'Scroll Down');
+                } else if (isAtBottom) {
+                    // Show scroll to top button (Uno Reverse!)
+                    scrollBtn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-10', 'scale-75');
+                    scrollBtn.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                    scrollCircle.classList.remove('animate-scroll-dot-down');
+                    scrollCircle.classList.add('animate-scroll-dot-up');
+                    scrollBtn.setAttribute('aria-label', 'Scroll to Top');
+                } else {
+                    // Hide button while in between
+                    scrollBtn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-10', 'scale-75');
+                    scrollBtn.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                }
+            };
+
+            window.addEventListener('scroll', handleScroll);
+            handleScroll();
+
+            scrollBtn.addEventListener('click', () => {
+                const scrollY = window.scrollY;
+                const isAtTop = scrollY < 50;
+
+                if (isAtTop) {
+                    if (postsSection) {
+                        postsSection.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                        window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' });
+                    }
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+        }
+    });
+</script>
+
+{% block content %}{% endblock %}
+
+<!-- Scroll to Top/Bottom Button (Oval Mouse Scroll Style with Uno Reverse) -->
+<button id="scroll-btn" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex justify-center pt-2 w-7 h-11 rounded-full border-2 border-outline-variant hover:border-primary transition-all duration-300 bg-background/60 backdrop-blur-sm shadow-lg shadow-black/50 opacity-0 pointer-events-none translate-y-10 scale-75 hover:scale-110 active:scale-95" aria-label="Scroll Down">
+    <span id="scroll-circle" class="w-1.5 h-1.5 rounded-full bg-primary transition-all duration-300"></span>
+</button>
+
+<footer class="w-full bg-surface-container-low/90 backdrop-blur-sm border-t border-outline-variant">
+    <div class="py-6 px-4 md:px-12 w-full flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+        <div class="flex flex-col gap-2">
+            <span class="font-headline-lg text-headline-lg font-bold text-primary">Dockerize</span>
+            <p class="text-on-surface-variant font-label-md text-label-md">© 2026 Dockerize Infrastructure. All rights reserved.</p>
+        </div>
+        <div class="flex flex-wrap gap-4 justify-center items-center">
+            <a class="inline-flex items-center gap-2 px-4 py-2 border border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary font-label-md text-label-md font-medium rounded-lg transition-all active:scale-95 duration-200" href="https://github.com/Akshitaman" target="_blank" rel="noopener noreferrer">
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                GitHub
+            </a>
+        </div>
+    </div>
+</footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>

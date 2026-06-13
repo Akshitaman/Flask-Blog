@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation | Dockerize{% endblock %}
+
+{% block content %}
+<section class="relative min-h-screen pt-24 pb-16 px-4 md:px-12">
+    <div class="relative z-10 w-full max-w-4xl mx-auto">
+        <!-- Documentation Header -->
+        <div class="mb-12 text-center scroll-reveal">
+            <div class="inline-block px-3 py-1 mb-4 border border-primary/30 bg-primary/10 rounded-full">
+                <span class="font-code-block text-label-md text-primary uppercase tracking-widest">[ doc_version: v1.0.0 ]</span>
+            </div>
+            <h1 class="font-display-lg text-display-lg text-on-surface mb-3">Project Documentation</h1>
+            <p class="text-on-surface-variant max-w-2xl mx-auto">Learn how and why this portal was designed, and discover its cloud-native integration for DevOps pipelines.</p>
+        </div>
+
+        <div class="space-y-12">
+            <!-- Section 1: Why I Created This Webpage -->
+            <div class="precision-border bg-surface-container-low/90 backdrop-blur-sm rounded-xl p-8 scroll-reveal shadow-2xl shadow-black/40">
+                <h2 class="font-headline-lg text-[24px] text-primary mb-4 flex items-center gap-3">
+                    <span class="font-code-block text-[20px] text-primary/60">01/</span> Why This Webpage Exists
+                </h2>
+                <div class="space-y-4 text-on-surface-variant font-body-md">
+                    <p>
+                        This portal was built to serve as a high-fidelity developer blog and infrastructure knowledge-sharing platform. Knowledge transfer is crucial in modern engineering environments, and having a containerized platform allows teams to document lessons learned, post-mortems, and architectural diagrams.
+                    </p>
+                    <p>
+                        Beyond serving as a blog, this platform represents a robust **reference architecture** for modern containerized development, illustrating how light backends (Flask) can combine with fluid, responsive interfaces (Tailwind, Three.js) and clean DevOps deployment principles.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Section 2: How I Created This Webpage -->
+            <div class="precision-border bg-surface-container-low/90 backdrop-blur-sm rounded-xl p-8 scroll-reveal shadow-2xl shadow-black/40">
+                <h2 class="font-headline-lg text-[24px] text-primary mb-4 flex items-center gap-3">
+                    <span class="font-code-block text-[20px] text-primary/60">02/</span> Tech Stack & Creation
+                </h2>
+                <div class="space-y-6">
+                    <p class="text-on-surface-variant font-body-md">
+                        The platform was constructed using a decoupled design philosophy, marrying lightweight micro-framework backend speed with rich interface aesthetics.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <!-- Backend -->
+                        <div class="bg-background/50 p-5 rounded-lg border border-outline-variant/30">
+                            <h3 class="text-primary font-headline-lg text-[18px] mb-2">Backend Engine</h3>
+                            <p class="text-on-surface-variant text-[14px] leading-relaxed">
+                                Powered by **Flask** (Python 3.12-slim) to process requests, manage in-memory states, and route page templates. Gunicorn serves as the WSGI HTTP server, optimized with multiple workers to handle concurrent client threads.
+                            </p>
+                        </div>
+                        <!-- Frontend -->
+                        <div class="bg-background/50 p-5 rounded-lg border border-outline-variant/30">
+                            <h3 class="text-primary font-headline-lg text-[18px] mb-2">Interactive Frontend</h3>
+                            <p class="text-on-surface-variant text-[14px] leading-relaxed">
+                                Styled using **Tailwind CSS CDN** for rapid, responsive layout utilities. Augmented with a custom **Three.js WebGL starfield particle container** for a futuristic dark-mode background and **Intersection Observers** for fluid scroll reveal animations.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Created for DevOps Projects -->
+            <div class="precision-border bg-surface-container-low/90 backdrop-blur-sm rounded-xl p-8 scroll-reveal shadow-2xl shadow-black/40">
+                <h2 class="font-headline-lg text-[24px] text-primary mb-4 flex items-center gap-3">
+                    <span class="font-code-block text-[20px] text-primary/60">03/</span> DevOps & Containerization
+                </h2>
+                <div class="space-y-4 text-on-surface-variant font-body-md">
+                    <p>
+                        This portal was designed with cloud-native engineering principles in mind. It is fully containerized using **Docker** and runs securely via a non-root user setup with Gunicorn, optimized to handle production traffic efficiently.
+                    </p>
+                    <p>
+                        The build configuration utilizes optimized caching layers and multi-stage container patterns to ensure rapid, secure deployment cycles across CI/CD pipelines and Kubernetes clusters.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="mt-12 text-center scroll-reveal">
+            <a href="{{ url_for('index') }}" class="inline-flex items-center gap-2 px-8 py-4 bg-transparent border border-outline-variant text-on-surface font-label-md text-label-md font-medium rounded-lg border-draw hover:text-primary transition-all active:scale-95">
+                <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+                Back to Cluster Dashboard
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

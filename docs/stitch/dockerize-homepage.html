@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dockerize | Containerize Your Knowledge</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Geist:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#a1acb1",
+                    "inverse-primary": "#006686",
+                    "primary-fixed-dim": "#b3e5fc",
+                    "outline": "#87929a",
+                    "secondary-fixed-dim": "#b4cad3",
+                    "on-tertiary-container": "#364045",
+                    "tertiary-fixed-dim": "#bdc8cd",
+                    "on-tertiary-fixed-variant": "#3e484d",
+                    "inverse-on-surface": "#2c3134",
+                    "on-primary-fixed": "#001e2b",
+                    "surface-container-highest": "#303638",
+                    "surface-container": "#1b2023",
+                    "primary": "#b3e5fc",
+                    "outline-variant": "#3d484f",
+                    "surface-container-low": "#171c1f",
+                    "on-background": "#dee3e6",
+                    "surface-dim": "#0f1416",
+                    "inverse-surface": "#dee3e6",
+                    "on-tertiary-fixed": "#131d21",
+                    "on-secondary-fixed-variant": "#354a51",
+                    "primary-container": "#b3e5fc",
+                    "on-secondary-container": "#a2b9c1",
+                    "tertiary-fixed": "#d9e4e9",
+                    "secondary-fixed": "#cfe6ef",
+                    "on-secondary": "#1e333a",
+                    "tertiary": "#bdc8cd",
+                    "primary-fixed": "#e1f5fe",
+                    "on-surface-variant": "#bcc8d0",
+                    "secondary": "#b4cad3",
+                    "on-surface": "#dee3e6",
+                    "error-container": "#93000a",
+                    "surface-variant": "#303638",
+                    "on-primary": "#003547",
+                    "secondary-container": "#354a51",
+                    "surface-container-lowest": "#090f11",
+                    "error": "#ffb4ab",
+                    "on-primary-container": "#00445b",
+                    "surface-container-high": "#252b2d",
+                    "on-error-container": "#ffdad6",
+                    "surface-tint": "#b3e5fc",
+                    "on-error": "#690005",
+                    "surface-bright": "#343a3c",
+                    "on-primary-fixed-variant": "#004d66",
+                    "on-secondary-fixed": "#081e25",
+                    "surface": "#0f1416",
+                    "on-tertiary": "#283236",
+                    "background": "#0f1416"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-lg": "48px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "48px",
+                    "stack-md": "24px",
+                    "stack-sm": "8px",
+                    "gutter": "24px",
+                    "unit": "4px",
+                    "container-max": "1200px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Geist"],
+                    "label-md": ["JetBrains Mono"],
+                    "headline-lg-mobile": ["JetBrains Mono"],
+                    "headline-lg": ["JetBrains Mono"],
+                    "body-md": ["Geist"],
+                    "display-lg": ["JetBrains Mono"],
+                    "code-block": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1.0", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "code-block": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(179, 229, 252, 0.4); }
+            50% { box-shadow: 0 0 35px rgba(179, 229, 252, 0.7); }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+        
+        .border-draw {
+            position: relative;
+            overflow: hidden;
+        }
+        .border-draw::before, .border-draw::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: #b3e5fc;
+            transition: width 0.3s ease;
+        }
+        .border-draw::before { top: 0; left: 0; }
+        .border-draw::after { bottom: 0; right: 0; }
+        .border-draw:hover::before, .border-draw:hover::after { width: 100%; }
+
+        .terminal-bullet::before {
+            content: '>';
+            color: #b3e5fc;
+            margin-right: 8px;
+            font-family: 'JetBrains Mono';
+        }
+
+        .precision-border {
+            border: 1px solid #3d484f;
+            transition: border-color 0.3s ease;
+        }
+        .precision-border:hover {
+            border-color: #b3e5fc;
+        }
+        
+        /* Star Glow Effect for Buttons */
+        .star-glow {
+            box-shadow: 0 0 20px rgba(179, 229, 252, 0.3);
+            transition: box-shadow 0.3s ease;
+        }
+        .star-glow:hover {
+            box-shadow: 0 0 30px rgba(179, 229, 252, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- Fixed Space Stars Background -->
+<div class="fixed inset-0 w-full h-full -z-10 bg-background overflow-hidden">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_4" style="width:100%;height:100%"></div>
+<script>
+    (function() {
+      const container = document.getElementById('threejs-container-ANIMATION_4');
+      const width = container.clientWidth || window.innerWidth;
+      const height = container.clientHeight || window.innerHeight;
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, width / height, 1, 2000);
+      camera.position.z = 1000;
+
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      container.appendChild(renderer.domElement);
+
+      const starCount = 2000;
+      const positions = new Float32Array(starCount * 3);
+      const colors = new Float32Array(starCount * 3);
+      const sizes = new Float32Array(starCount);
+
+      for (let i = 0; i < starCount; i++) {
+        positions[i * 3] = (Math.random() - 0.5) * 2000;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 2000;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 2000;
+
+        colors[i * 3] = 1;
+        colors[i * 3 + 1] = 1;
+        colors[i * 3 + 2] = 1;
+
+        sizes[i] = Math.random() * 2;
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+      const material = new THREE.PointsMaterial({
+        size: 2,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending
+      });
+
+      const stars = new THREE.Points(geometry, material);
+      scene.add(stars);
+
+      function animate() {
+        requestAnimationFrame(animate);
+        
+        stars.rotation.y += 0.0005;
+        stars.rotation.x += 0.0002;
+
+        material.opacity = 0.6 + Math.sin(Date.now() * 0.001) * 0.2;
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+
+      window.addEventListener('resize', () => {
+        const newWidth = container.clientWidth || window.innerWidth;
+        const newHeight = container.clientHeight || window.innerHeight;
+        camera.aspect = newWidth / newHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(newWidth, newHeight);
+      });
+    })();
+    </script>
+</div>
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-outline-variant">
+<nav class="flex justify-between items-center h-16 px-margin-desktop max-w-container-max mx-auto">
+<div class="flex items-center gap-gutter">
+<a class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight" href="/">Dockerize</a>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-primary border-b-2 border-primary pb-1 font-label-md text-label-md" href="/blog">Blog</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-200" href="/docs">Documentation</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-200" href="/tutorials">Tutorials</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-200" href="/about">About</a>
+</div>
+</div>
+<div class="flex items-center gap-stack-sm">
+<button aria-label="Search" class="p-2 text-on-surface-variant hover:text-primary transition-colors scale-95 active:scale-90">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button aria-label="Terminal" class="p-2 text-on-surface-variant hover:text-primary transition-colors scale-95 active:scale-90">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+</button>
+</div>
+</nav>
+</header>
+<!-- Hero Section -->
+<section class="relative h-screen flex items-center justify-center pt-16 overflow-hidden">
+<div class="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center">
+<div class="inline-block px-3 py-1 mb-6 border border-primary/30 bg-primary/10 rounded-full">
+<span class="font-code-block text-label-md text-primary uppercase tracking-widest">[ build_status: stable ]</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-on-background mb-stack-sm leading-tight max-w-4xl mx-auto">
+                Containerize Your <span class="text-primary">Knowledge</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-stack-lg">
+                Master the architecture of modern infrastructure. Deep dives into Docker orchestration, Kubernetes patterns, and cloud-native workflows for technical leaders.
+            </p>
+<div class="flex flex-col sm:flex-row gap-gutter justify-center">
+<button class="group relative px-8 py-4 bg-primary text-on-primary font-label-md text-label-md font-bold rounded-lg transition-all hover:brightness-110 active:scale-95 star-glow animate-pulse-glow flex items-center justify-center gap-2">
+                    Explore Blog
+                    <span class="material-symbols-outlined text-[20px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<button class="group relative px-8 py-4 bg-transparent border border-outline-variant text-on-surface font-label-md text-label-md font-medium rounded-lg transition-all border-draw hover:text-primary active:scale-95 flex items-center justify-center gap-2">
+                    Get Started
+                    <span class="material-symbols-outlined text-[20px]" data-icon="rocket_launch">rocket_launch</span>
+</button>
+</div>
+</div>
+<!-- Floor Decoration -->
+<div class="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+</section>
+<!-- Bento News/Status Bar -->
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop -mt-16 relative z-20">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-unit bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden shadow-2xl shadow-black/50">
+<div class="p-6 flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="update">update</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface">Last Deployment</p>
+<p class="text-on-surface-variant text-body-md font-code-block">2 hours ago</p>
+</div>
+</div>
+<div class="p-6 border-l border-r border-outline-variant flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="memory">memory</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface">Cloud Native 1.0</p>
+<p class="text-on-surface-variant text-body-md font-code-block">Latest Guide Live</p>
+</div>
+</div>
+<div class="p-6 flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="group">group</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface">Active Nodes</p>
+<p class="text-on-surface-variant text-body-md font-code-block">12,403 Developers</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Posts Section -->
+<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg mt-stack-lg">
+<div class="flex justify-between items-end mb-stack-md">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface flex items-center gap-4">
+<span class="text-primary font-code-block">01/</span> Recent Posts
+                </h2>
+<p class="text-on-surface-variant mt-2">Latest insights from the infrastructure frontier.</p>
+</div>
+<a class="hidden md:flex items-center gap-2 text-primary font-label-md text-label-md group" href="/blog">
+                View All Posts
+                <span class="material-symbols-outlined transition-transform group-hover:translate-x-1" data-icon="chevron_right">chevron_right</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Post Card 1 -->
+<article class="precision-border bg-surface-container-low/80 backdrop-blur-sm rounded-xl overflow-hidden group">
+<div class="aspect-video relative overflow-hidden">
+<img alt="Multi-stage builds visualization" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmDeo_aUEx0ysVlSNRgj7MrwoUW5PVjxneEwRsHeTvM1DufXauY_0eZjuqTA9WaTdpXbBk05LofsXAzpZszKpNFOBJjJZXeqKFa2Y3mIOsEPLOY897sZuqyXKGoz8dw98nTKOb4cjvfHCcCPOVfsnbW1r_FGo77vp3NLL5s6N76vfKmLFXQWeI86BreJ73VkGYZ64j141UJNT3b_dh0-dwgxvgo6X7eyqXFJLNRIDvJxM-IBamhf0g8dmGOG-YQZy1NIGHJja3wRls"/>
+<div class="absolute top-4 left-4 bg-background/90 backdrop-blur px-3 py-1 rounded font-code-block text-[12px] text-primary">DOCKER</div>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 mb-3">
+<span class="text-on-surface-variant text-[12px] font-code-block">MAR 15, 2024</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="text-on-surface-variant text-[12px] font-code-block">8 MIN READ</span>
+</div>
+<h3 class="font-headline-lg text-[20px] mb-4 group-hover:text-primary transition-colors text-on-surface">Optimizing Multi-stage Builds</h3>
+<p class="text-on-surface-variant line-clamp-2 mb-6">Learn how to shave megabytes off your production images using advanced build patterns and efficient layer management.</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-2 py-1 bg-surface-variant rounded text-[10px] font-code-block uppercase tracking-wider text-on-surface-variant">#optimization</span>
+<span class="px-2 py-1 bg-surface-variant rounded text-[10px] font-code-block uppercase tracking-wider text-on-surface-variant">#devops</span>
+</div>
+<button class="flex items-center gap-2 text-primary font-label-md text-label-md font-bold uppercase tracking-widest hover:gap-3 transition-all">
+                        Read More 
+                        <span class="material-symbols-outlined text-[18px]" data-icon="arrow_outward">arrow_outward</span>
+</button>
+</div>
+</article>
+<!-- Post Card 2 -->
+<article class="precision-border bg-surface-container-low/80 backdrop-blur-sm rounded-xl overflow-hidden group">
+<div class="aspect-video relative overflow-hidden">
+<img alt="Kubernetes networking concept" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByi5rvN5ZylcBt1GnXYlWC-g6DymY7AmQFgA1fk2YOVpEQh7MnBWCxR64MgmF05jAdJY3Wh-sxnO14854JTtvRg0i7opaMdoAdZXS7hSkiyk2xIxnPjSYo2uozmbZlUu9ftaNRNnoiqVDnTCH7WUxlSUwgppC4KlE3e53fveEsLXJDj1vYptsWSD1Dy4z0WW5r5g2AP1akCyIvjCEj1zZV4XTOsT-x6c3P6i5AkNaZu8oK7bPUvtJbC0jc7Kn1O9Rc0yIdKJ5CKJ2X"/>
+<div class="absolute top-4 left-4 bg-background/90 backdrop-blur px-3 py-1 rounded font-code-block text-[12px] text-primary">K8S</div>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 mb-3">
+<span class="text-on-surface-variant text-[12px] font-code-block">MAR 12, 2024</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="text-on-surface-variant text-[12px] font-code-block">12 MIN READ</span>
+</div>
+<h3 class="font-headline-lg text-[20px] mb-4 group-hover:text-primary transition-colors text-on-surface">Kubernetes Networking 101</h3>
+<p class="text-on-surface-variant line-clamp-2 mb-6">Demystifying the complex world of CNI, service meshes, and ingress controllers in a production environment.</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-2 py-1 bg-surface-variant rounded text-[10px] font-code-block uppercase tracking-wider text-on-surface-variant">#networking</span>
+<span class="px-2 py-1 bg-surface-variant rounded text-[10px] font-code-block uppercase tracking-wider text-on-surface-variant">#k8s</span>
+</div>
+<button class="flex items-center gap-2 text-primary font-label-md text-label-md font-bold uppercase tracking-widest hover:gap-3 transition-all">
+                        Read More 
+                        <span class="material-symbols-outlined text-[18px]" data-icon="arrow_outward">arrow_outward</span>
+</button>
+</div>
+</article>
+<!-- Post Card 3 -->
+<article class="precision-border bg-surface-container-low/80 backdrop-blur-sm rounded-xl overflow-hidden group">
+<div class="aspect-video relative overflow-hidden">
+<img alt="Security focus" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx8ScOjYLQc7bbeK_v7A60tuXTXRCKcySwM6F_EcKy_YocBsh4r8LXJ235wD9oSSBgPW0Ef2gSAwUGUkKMopnPxRgjCcHn1CjaHgyZHmiR2vybsr7Qfcns7Uu2hkMaRuFzchac2N8ftjnOANq_tFrFblSWaCAfuxec_KwqNxX41f2cDbI14paXGmOXLko-00bWoOQGshyHsXdN7ekkhHLgTn1wuBMlxEK8TSGz34pDZWA7bqJhN8ZHITrfHwJkGLm_gG0BeHyS04tQ"/>
+<div class="absolute top-4 left-4 bg-background/90 backdrop-blur px-3 py-1 rounded font-code-block text-[12px] text-primary">SECURITY</div>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-2 mb-3">
+<span class="text-on-surface-variant text-[12px] font-code-block">MAR 08, 2024</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="text-on-surface-variant text-[12px] font-code-block">10 MIN READ</span>
+</div>
+<h3 class="font-headline-lg text-[20px] mb-4 group-hover:text-primary transition-colors text-on-surface">Hardening Docker Hub Images</h3>
+<p class="text-on-surface-variant line-clamp-2 mb-6">Best practices for scanning, signing, and securing your base images against common vulnerabilities.</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-2 py-1 bg-surface-variant rounded text-[10px] font-code-block uppercase tracking-wider text-on-surface-variant">#security</span>
+<span class="px-2 py-1 bg-surface-variant rounded text-[10px] font-code-block uppercase tracking-wider text-on-surface-variant">#hardened</span>
+</div>
+<button class="flex items-center gap-2 text-primary font-label-md text-label-md font-bold uppercase tracking-widest hover:gap-3 transition-all">
+                        Read More 
+                        <span class="material-symbols-outlined text-[18px]" data-icon="arrow_outward">arrow_outward</span>
+</button>
+</div>
+</article>
+</div>
+</section>
+<!-- Technical Specs CTA -->
+<section class="bg-surface/80 backdrop-blur-sm py-stack-lg border-y border-outline-variant">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid md:grid-cols-2 gap-stack-lg items-center">
+<div>
+<h2 class="font-headline-lg text-headline-lg mb-6 text-on-surface">Ready to Ship Better Code?</h2>
+<ul class="space-y-4">
+<li class="terminal-bullet text-on-surface-variant font-body-md">Access 500+ deep-dive containerization tutorials.</li>
+<li class="terminal-bullet text-on-surface-variant font-body-md">Download open-source infrastructure templates.</li>
+<li class="terminal-bullet text-on-surface-variant font-body-md">Join weekly livestreams with CNCF maintainers.</li>
+</ul>
+</div>
+<div class="precision-border bg-surface-container-low p-8 rounded-xl font-code-block shadow-lg shadow-black">
+<div class="flex items-center gap-2 mb-4 border-b border-outline-variant pb-2">
+<div class="w-3 h-3 rounded-full bg-error"></div>
+<div class="w-3 h-3 rounded-full bg-[#fbbc05]"></div>
+<div class="w-3 h-3 rounded-full bg-[#34a853]"></div>
+<span class="ml-4 text-outline text-[12px]">bash — subscription_setup.sh</span>
+</div>
+<div class="space-y-2 text-primary">
+<p><span class="text-on-surface-variant">$</span> docker login dockerize.io</p>
+<p class="text-on-surface-variant">Authenticating...</p>
+<p><span class="text-on-surface-variant">$</span> docker pull dockerize/newsletter:latest</p>
+<div class="flex items-center gap-4 mt-6">
+<input class="bg-background border border-outline-variant text-on-surface px-4 py-2 w-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 text-body-md rounded" placeholder="email@developer.com" type="email"/>
+<button class="bg-primary text-on-primary px-6 py-2 font-bold whitespace-nowrap rounded star-glow hover:brightness-110 transition-all">SUBSCRIBE</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-low/90 backdrop-blur-sm border-t border-outline-variant">
+<div class="py-stack-md px-margin-desktop max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-gutter">
+<div class="flex flex-col gap-2">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">Dockerize</span>
+<p class="text-on-surface-variant font-label-md text-label-md">© 2024 Dockerize Infrastructure. All rights reserved.</p>
+</div>
+<div class="flex gap-6">
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Twitter</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">GitHub</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Discord</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Privacy</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Terms</a>
+</div>
+</div>
+</footer>
+<script>
+        // Smooth scroll implementation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body></html>
