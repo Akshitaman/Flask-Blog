@@ -33,10 +33,10 @@ def edit_post(post_id):
         return redirect(url_for('index'))
     return render_template('post.html', post=post)
 
-@app.route('/delete/<int:post_id>', methods=['POST'])
-def delete_post(post_id):
-    global posts
-    posts = [p for p in posts if p.get('id') != post_id]
+@app.route('/delete/<int:index>', methods=['POST'])
+def delete_post(index):
+    if 0 <= index < len(posts):
+        posts.pop(index)
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
